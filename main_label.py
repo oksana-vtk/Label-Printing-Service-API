@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 import os
 
 
-# Завантаження змінних з середовища .env
+# Load environment variables from .env
 load_dotenv()
 PRINTER_IP = os.getenv("PRINTER_IP")
 
@@ -17,7 +17,6 @@ PRINTER_IP = os.getenv("PRINTER_IP")
 app = Flask(__name__)
 
 
-# Функція надсилання даних на принтер
 def send_to_printer(printer_ip, port, data):
 
     current_datetime = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -53,26 +52,24 @@ def generate_full_template(gifts, contact_id):
     return template
 
 
-# API_1 Документація в файлі API_DOC.md /label/print-sets
+# API_1 Endpoint:/label/print-sets
+# Full documentation available in API_DOC.md
 @app.route('/print-sets', methods=['POST'])
 def print_sticker_sets():
 
     current_datetime = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
-    # Параметри підключення принтеру
-    #printer_ip = os.getenv("PRINTER_IP") - перенесено в глобальну змінну
-
-    # Отримуємо дані з запиту
+    # Receive data from the request
     request_data = request.json
 
     printer_port = request_data.get("printer")
     contact_id = request_data.get("contact_id")
     gifts = request_data.get("gifts")
 
-    # Формуємо завдання для друку
+    # Create a print job
     stickers_content = generate_full_template(gifts, contact_id)
 
-    # Відправляємо на принтер
+    # Send to the printer
     if send_to_printer(PRINTER_IP, printer_port, stickers_content):
 
         status = {"code": 200,
